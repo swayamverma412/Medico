@@ -2,6 +2,14 @@ from flask import Flask, request, render_template, jsonify  # Import jsonify
 import numpy as np
 import pandas as pd
 import pickle
+import subprocess
+import cv2
+import base64
+import io
+from keras.preprocessing import image
+from keras.models import load_model
+
+
 
 
 app = Flask(__name__)
@@ -147,6 +155,37 @@ def recommend():
         medicines_data = medicines['Drug_Name'].values.tolist()
         return render_template("recommend.html", medicines=medicines_data)
         
+@app.route('/multidisease')
+def multidisease():
+    return render_template('multidisease.html')
+
+@app.route('/streamlit')
+def streamlit():
+    subprocess.Popen(['streamlit', 'run', 'streamlit_app.py'])
+    return ''
+
+model = load_model('models/braintumor.h5')
+
+@app.route('/brain_tumor')
+def brain_tumor():
+    return render_template('brain_tumor.html')
+
+@app.route('/brain', methods=['POST'])
+def brain():
+    if request.method == 'POST':
+        img = request.files['image']
+        img_bytes = img.read()
+        img_array = np.array(bytearray(img_bytes), dtype=np.uint8)
+        img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+        img = cv2.resize(img, (150, 150))
+        img_array = np.expand_dims(img, axis=0)
+        img_array = np.expand_dims(img_array, axis=-1)
+        predictions = model.predict(img_array)
+        indices = np.argmax(predictions)
+        probabilities = np.max(predictions)
+        labels = ['glioma_tumor', 'meningioma_tumor', 'no_tumor', 'pituitary_tumor']
+        result = {'label': labels[indices], 'probability': float(probabilities)}
+        return jsonify(result)
 
 
 if __name__ == '__main__':

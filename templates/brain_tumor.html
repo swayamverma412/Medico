@@ -1,29 +1,47 @@
-{% extends "import.html" %} 
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Tumor Classification</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
 
-<center>
-<br><h2>Brain Tumor Classification Using Deep Learning</h2><br>
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
 
-    <form id="upload-file" method="post" enctype="multipart/form-data">
-         <input type="file" name="file" class="btn btn-success" id="imageUpload" accept=".png, .jpg, .jpeg">
-    </form>
-
-
-    <div class="image-section" style="display:none;">
-         <img id="imagePreview"  class="img-responsive" src="#" style="width:300px;height:300px;"/><br><br>
-         <div>
-            <button type="button" class="btn btn-info btn-lg " id="btn-predict">Predict!</button>
-         </div>
+        #result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Brain Tumor Classification</h1>
+        <form action="{{ url_for('brain') }}" method="POST" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*" required>
+            <button type="submit">Predict</button>
+        </form>
+        <div id="result"></div>
     </div>
-
-
-
-    <div class="loader" style="display:none;"></div>
-
-    <h3 id="result">
-        <span> </span>
-    </h3>
-
-
-</center><br><br>
-{% endblock %}
+    <script>
+        const resultDiv = document.getElementById('result');
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '/');
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                const result = JSON.parse(xhr.responseText);
+                resultDiv.innerHTML = `<p>Predicted Label: ${result.label}</p><p>Probability: ${result.probability}</p>`;
+            }
+        };
+        xhr.send();
+    </script>
+</body>
+</html>
