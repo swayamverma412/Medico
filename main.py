@@ -363,5 +363,3 @@ def pneumoniapredictPage():
     return render_template('pneumonia_predict.html', pred = pred)
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
