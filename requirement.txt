@@ -1,9 +1,0 @@
-Flask
-Gunicorn
-Numpy
-Pandas
-Tensorflow
-Opencv-python
-Pillow
-scikit-learn
-Pickle4
