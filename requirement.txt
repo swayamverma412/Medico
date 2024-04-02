@@ -1,0 +1,8 @@
+Flask
+Gunicorn
+Numpy
+Pandas
+Tensorflow
+Opencv-python
+Pillow
+Pickle4
